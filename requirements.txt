@@ -1,0 +1,7 @@
+
+fastapi
+requests
+flask
+gevent
+sherpa-onnx
+numpy

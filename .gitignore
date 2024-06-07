@@ -1,0 +1,11 @@
+venv
+.idea
+build
+dist
+models
+*.log
+*.wav
+*.mp3
+*.spec
+*.exe
+*.zip
