@@ -34,7 +34,8 @@ root_log.handlers = []
 root_log.setLevel(logging.WARNING)
 
 # model_conf
-if os.getenv('USE_INT8', 2) == 1 :
+if os.getenv('USE_INT8', 2) == '1':
+    print('1')
     recognizer = sherpa_onnx.OfflineRecognizer.from_transducer(
             joiner=os.path.join(M_DIR, 'joiner-epoch-20-avg-1.int8.onnx'),
             encoder=os.path.join(M_DIR, 'encoder-epoch-20-avg-1.int8.onnx'),
@@ -158,6 +159,14 @@ def api():
             "-i",
             source_file,
         ]
+
+        params.append('-acodec')
+        params.append('pcm_s16le')
+        params.append('-ar')
+        params.append('16k')
+        params.append('-ac')
+        params.append('1')
+
         if not os.path.exists(wav_file) or os.path.getsize(wav_file) == 0:
             if ext in ['.mp4', '.mov', '.avi', '.mkv', '.mpeg', '.mp3', '.flac']:
 
@@ -182,7 +191,7 @@ def api():
         start_time = time.time()
 
         total_duration = 0
-        samples, sample_rate = read_wave(source_file)
+        samples, sample_rate = read_wave(wav_file)
         duration = len(samples) / sample_rate
         total_duration += duration
         s = recognizer.create_stream()
@@ -192,13 +201,14 @@ def api():
         results = s.result.text
         end_time = time.time()
 
-        return jsonify({"code": 0, "msg": 'ok', "data": results, 'times': (end_time -start_time) ,
+        return jsonify({"code": 0, "msg": 'ok', "data": [{'text': results }], 'times': (end_time -start_time) ,
                         'total_duration': total_duration, 'filename': f'{noextname}{ext}'})
     except Exception as e:
         print(e)
         app.logger.error(f'[api]error: {e}')
         return jsonify({'code': 2, 'msg': str(e)})
     finally:
+        pass
         if is_delete is None:
             if os.path.exists(wav_file):
                 os.remove(source_file)
