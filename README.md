@@ -8,6 +8,19 @@ sherpa-onnx-asr
 
 部署完成之后，可以访问 ip:5001, 有一个测试界面可以使用。 
 
+```bash
+# 完整版， 目前完整版占用 1g 内存
+docker pull yaming116/sherpa-onnx-asr:latest
+# 低内存版本
+docker pull yaming116/sherpa-onnx-asr-tiny:latest
+
+docker run -d \
+--restart=always -it \
+--name sherpa-onnx-asr \
+-p 5001:5001 \
+yaming116/sherpa-onnx-asr:latest
+```
+
 华为测试音频链接： 
 https://sis-sample-audio.obs.cn-north-1.myhuaweicloud.com/16k16bit.mp3
 
@@ -34,6 +47,3 @@ file： 音频文件
 ### 公众号
 可以关注我的公众号，一起交流 HomeAssistant 相关技术。
 ![](./IMG_8406.JPG)
-
-## 其他
-感谢 [https://github.com/jianchang512/stt](https://github.com/jianchang512/stt)
