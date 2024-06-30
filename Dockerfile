@@ -19,7 +19,7 @@ ARG MODEL='zipformer'
 ARG MODEL_FILE_NAME='sherpa-onnx-zipformer-multi-zh-hans-2023-9-2.tar.bz2'
 
 ENV MODEL=$MODEL
-# --build-arg MODEL=zipformer --build-arg DELETE_NAMES='model.onnx' --build-arg MODEL_FILE_NAME=sherpa-onnx-paraformer-zh-2023-03-28.tar.bz2
+# --build-arg MODEL=paraformer --build-arg DELETE_NAMES='model.onnx' --build-arg MODEL_FILE_NAME=sherpa-onnx-paraformer-zh-2023-03-28.tar.bz2
 
 RUN mkdir -p /models && chmod -R 777 /models
 
@@ -29,7 +29,7 @@ RUN mkdir -p /models && chmod -R 777 /models
 # sherpa-onnx-paraformer-zh-2023-03-28.tar.bz2
 
 
-RUN  curl -SL -O http://192.168.3.127:3000/${MODEL_FILE_NAME} \
+RUN  curl -SL -O https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/${MODEL_FILE_NAME} \
         && ls -all \
         && tar xvf ${MODEL_FILE_NAME} --strip-components 1 -C /models \
         && rm ${MODEL_FILE_NAME} \
