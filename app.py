@@ -33,24 +33,26 @@ root_log = logging.getLogger()  # Flask的根日志记录器
 root_log.handlers = []
 root_log.setLevel(logging.WARNING)
 
-# model_conf
-if os.getenv('USE_INT8', 2) == '1':
-    print('1')
-    recognizer = sherpa_onnx.OfflineRecognizer.from_transducer(
-            joiner=os.path.join(M_DIR, 'joiner-epoch-20-avg-1.int8.onnx'),
-            encoder=os.path.join(M_DIR, 'encoder-epoch-20-avg-1.int8.onnx'),
-            decoder=os.path.join(M_DIR, 'decoder-epoch-20-avg-1.int8.onnx'),
+recognizer = None
+try:
+    m = os.getenv('MODEL', 'zipformer')
+    if m == 'zipformer':
+        recognizer = sherpa_onnx.OfflineRecognizer.from_transducer(
+            joiner=os.path.join(M_DIR, 'joiner-epoch-20-avg-1.onnx'),
+            encoder=os.path.join(M_DIR, 'encoder-epoch-20-avg-1.onnx'),
+            decoder=os.path.join(M_DIR, 'decoder-epoch-20-avg-1.onnx'),
             tokens=os.path.join(M_DIR, 'tokens.txt'),
-            num_threads=5
-            )
-else:
-    recognizer = sherpa_onnx.OfflineRecognizer.from_transducer(
-        joiner=os.path.join(M_DIR, 'joiner-epoch-20-avg-1.onnx'),
-        encoder=os.path.join(M_DIR, 'encoder-epoch-20-avg-1.onnx'),
-        decoder=os.path.join(M_DIR, 'decoder-epoch-20-avg-1.onnx'),
-        tokens=os.path.join(M_DIR, 'tokens.txt'),
-        num_threads=5
-    )
+            num_threads=2
+        )
+    elif m == 'paraformer':
+        recognizer = sherpa_onnx.OfflineRecognizer.from_paraformer(
+            paraformer=os.path.join(M_DIR, 'model.int8.onnx'),
+            tokens=os.path.join(M_DIR, 'tokens.txt'),
+            num_threads=2,
+        )
+except Exception as e:
+    print('模型加载异常')
+    print(e)
 
 
 class CustomRequestHandler(WSGIHandler):
@@ -189,6 +191,9 @@ def api():
         print(f'{source_file=}')
 
         start_time = time.time()
+
+        if recognizer is None:
+            return jsonify({"code": 1, "msg": "模型初始化异常"})
 
         total_duration = 0
         samples, sample_rate = read_wave(wav_file)

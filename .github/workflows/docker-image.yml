@@ -38,7 +38,7 @@ jobs:
         image: yaming116/sherpa-onnx-asr
         labels: |-
           org.opencontainers.image.source=https://github.com/${{ github.repository }}
-        tags: ${{ steps.t1.outputs.year }}-${{ steps.t1.outputs.month }}-${{ steps.t1.outputs.day }}, latest
+        tags: zipformer-${{ steps.t1.outputs.year }}-${{ steps.t1.outputs.month }}-${{ steps.t1.outputs.day }}
         registry: docker.io
         dockerfile: Dockerfile
         multiPlatform: true
@@ -46,15 +46,15 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     - uses: mr-smithers-excellent/docker-build-push@v6
-      name: Build & push Docker image - tiny
+      name: Build & push Docker image
       with:
-        image: yaming116/sherpa-onnx-asr-tiny
+        image: yaming116/sherpa-onnx-asr
         labels: |-
           org.opencontainers.image.source=https://github.com/${{ github.repository }}
-        tags: ${{ steps.t1.outputs.year }}-${{ steps.t1.outputs.month }}-${{ steps.t1.outputs.day }}, latest
+        tags: paraformer-${{ steps.t1.outputs.year }}-${{ steps.t1.outputs.month }}-${{ steps.t1.outputs.day }}
         registry: docker.io
         dockerfile: Dockerfile
-        buildArgs: "BUILD_INT8=1,DELETE_NAMES='*avg-1.onnx'"
+        buildArgs: "MODEL=paraformer,DELETE_NAMES='model.onnx',MODEL_FILE_NAME='sherpa-onnx-paraformer-zh-2023-03-28.tar.bz2'"
         multiPlatform: true
         platform: linux/amd64,linux/arm64
         username: ${{ secrets.DOCKER_USERNAME }}
