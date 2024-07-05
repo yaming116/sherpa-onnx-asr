@@ -27,7 +27,12 @@ RUN mkdir -p /models && chmod -R 777 /models
 # http://192.168.3.107:3000/
 # https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models
 # sherpa-onnx-paraformer-zh-2023-03-28.tar.bz2
-
+#RUN  curl -SL -O http://192.168.3.112:3000/${MODEL_FILE_NAME} \
+#        && ls -all \
+#        && tar xvf ${MODEL_FILE_NAME} --strip-components 1 -C /models \
+#        && rm ${MODEL_FILE_NAME} \
+#        && find /models  -name ${DELETE_NAMES} -exec rm {} \; \
+#        && ls -all /models
 
 RUN  curl -SL -O https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/${MODEL_FILE_NAME} \
         && ls -all \

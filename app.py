@@ -18,6 +18,8 @@ warnings.filterwarnings('ignore')
 ROOT_DIR = os.getcwd()
 STATIC_DIR = os.path.join(ROOT_DIR, 'static')
 TMP_DIR = os.path.join(STATIC_DIR, 'tmp')
+RULE_DIR = os.path.join(STATIC_DIR, 'rules')
+
 # 本地使用需要下载模型到 ./models
 M_DIR = os.path.join(ROOT_DIR, 'models')
 ROOT_M_DIR = os.path.join('/', 'models')
@@ -36,19 +38,28 @@ root_log.setLevel(logging.WARNING)
 recognizer = None
 try:
     m = os.getenv('MODEL', 'zipformer')
+    r = os.getenv('RULE', 'on')
+
+    rules = ''
+
+    if r == 'on':
+        rules = os.path.join(RULE_DIR, 'itn_zh_number.fst')
+
     if m == 'zipformer':
         recognizer = sherpa_onnx.OfflineRecognizer.from_transducer(
             joiner=os.path.join(M_DIR, 'joiner-epoch-20-avg-1.onnx'),
             encoder=os.path.join(M_DIR, 'encoder-epoch-20-avg-1.onnx'),
             decoder=os.path.join(M_DIR, 'decoder-epoch-20-avg-1.onnx'),
             tokens=os.path.join(M_DIR, 'tokens.txt'),
-            num_threads=2
+            num_threads=2,
+            rule_fsts= rules
         )
     elif m == 'paraformer':
         recognizer = sherpa_onnx.OfflineRecognizer.from_paraformer(
             paraformer=os.path.join(M_DIR, 'model.int8.onnx'),
             tokens=os.path.join(M_DIR, 'tokens.txt'),
             num_threads=2,
+            rule_fsts = rules,
         )
 except Exception as e:
     print('模型加载异常')
